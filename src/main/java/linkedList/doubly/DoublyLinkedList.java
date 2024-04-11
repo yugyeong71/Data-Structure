@@ -1,8 +1,8 @@
-package linkedList.singly;
+package linkedList.doubly;
 
 import java.util.NoSuchElementException;
 
-public class SingleLinkedList<T> {
+public class DoublyLinkedList<T> {
 
     private Node<T> head; // 첫번째 노드 정보
 
@@ -16,10 +16,18 @@ public class SingleLinkedList<T> {
     public Node<T> findNode(int index) {
         if (index < 0 || index >= number) throw new IndexOutOfBoundsException(); // 올바르지 않은 index 요청
 
-        Node<T> node = head; // 첫번째 노드부터 시작
+        Node<T> node;
 
-        for (int i = 0; i < index; i++) {
-            node = node.next; // 다음 노드 저장
+        if (index > number / 2) { // 뒤에서부터 찾기 (index 값이 tail 에 가깝기 때문에 더 효율적)
+            node = tail;
+            for (int i = number - 1; i > index; i--) {
+                node = node.prev;
+            }
+        } else { // 앞에서부터 찾기 (index 값이 head 에 가깝기 때문에 더 효율적)
+            node = head;
+            for (int i = 0; i < index; i++) {
+                node = node.next;
+            }
         }
 
         return node;
@@ -38,6 +46,11 @@ public class SingleLinkedList<T> {
     public void addHead(T data) {
         Node<T> newNode = new Node<T>(data); // 새 노드 생성
         newNode.next = head; // 새 노드의 다음 노드는 head
+
+        if (head != null) { // 기존 head 의 이전 노드는 새 노드
+            head.prev = newNode;
+        }
+
         head = newNode; // head 는 새 노드
         number++; // 총 노드 개수 추가
 
@@ -58,6 +71,7 @@ public class SingleLinkedList<T> {
         }
 
         tail.next = newNode; // tail 의 다음 노드는 새 노드
+        newNode.prev = tail; // 새 노드의 이전 노드는 기존 tail
         tail = newNode; // 새 노드는 tail
         number++; // 총 노드 개수 추가
     }
@@ -83,8 +97,12 @@ public class SingleLinkedList<T> {
 
         Node<T> newNode = new Node<T>(data); // 새 노드 생성
 
-        prevNode.next = newNode; // 추가하려는 위치의 이전 노드가 가리키는 다음 노드는 새 노드
-        newNode.next = nextNode; // 추가하려는 위치의 다음 노드는 이전 노드가 가리키던 노드
+        prevNode.next = newNode; // 이전 노드의 다음 노드는 새 노드
+
+        newNode.prev = prevNode; // 새 노드의 이전 노드는 이전 노드
+        newNode.next = nextNode; // 새 노드의 다음 노드는 추가하려는 위치의 다음 노드
+
+        nextNode.prev = newNode; // 다음 노드의 이전 노드는 새 노드
         number++; // 총 노드 개수 추가
     }
 
@@ -100,10 +118,14 @@ public class SingleLinkedList<T> {
         head.data = null;
         head.next = null;
 
+        if (nextNode != null) {
+            nextNode.prev = null;
+        }
+
         head = nextNode; // 삭제 후, head 는 기존 head 의 다음 노드
         number--;
 
-        if (number == 0) { // 삭제한 노드가 유일한 노드인 경우, tail 도 Null
+        if(number == 0) { // 삭제한 노드가 유일한 노드인 경우, tail 도 Null
             tail = null;
         }
     }
@@ -124,13 +146,17 @@ public class SingleLinkedList<T> {
 
         prevNode.next = nextNode; // 이전 노드가 가리키는 다음 노드를 삭제하려는 노드의 다음 노드로 변경
 
-        if (prevNode.next == null) { // 삭제하려는 노드가 맨 끝 노드인 경우
-            tail = prevNode;
-        }
-
         // 노드 삭제
         removedNode.next = null;
+        removedNode.prev = null;
         removedNode.data = null;
+
+        if (nextNode != null) {
+            nextNode.prev = prevNode;
+        } else {
+            tail = prevNode; // 삭제하려는 노드가 맨 끝 노드인 경우
+        }
+
         number--;
     }
 
