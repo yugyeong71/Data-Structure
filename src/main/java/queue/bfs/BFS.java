@@ -10,13 +10,20 @@ import java.util.Set;
 
 public class BFS {
 
-	private final Map<Integer, List<Integer>> graph;
+	private final Map<Integer, List<Integer>> graph; // 노드 번호 & 연결된 노드 리스트
 
 	public BFS(Map<Integer, List<Integer>> graph) {
 		this.graph = graph;
 	}
 
-	public void bfs(int startNode) {
+	public List<Integer> bfs(int startNode) {
+		List<Integer> result = new ArrayList<>();
+
+		if (!graph.containsKey(startNode)) {
+			System.out.println("존재하지 않는 노드입니다.");
+			return result;
+		}
+
 		Queue<Integer> queue = new LinkedList<>();
 		queue.add(startNode);
 
@@ -25,7 +32,7 @@ public class BFS {
 
 		while (!queue.isEmpty()) {
 			int node = queue.poll();
-			System.out.print(node + " ");
+			result.add(node);
 
 			List<Integer> neighborList = graph.getOrDefault(node, new ArrayList<>());
 			for (int neighbor : neighborList) {
@@ -35,6 +42,8 @@ public class BFS {
 				}
 			}
 		}
+
+		return result;
 	}
 
 }

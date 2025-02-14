@@ -24,12 +24,19 @@ public class MainBFS {
 		int startNode = Integer.parseInt(br.readLine().trim());
 
 		BFS bfs = new BFS(mainBFS.graph);
-		System.out.print("BFS 탐색 순서 : ");
-		bfs.bfs(startNode);
+		List<Integer> bfsResult = bfs.bfs(startNode);
+
+		if (!bfsResult.isEmpty()) {
+			System.out.print("BFS 탐색 순서 : ");
+			System.out.println(bfsResult);
+		}
 
 		mainBFS.printGraph();
 	}
 
+	/**
+	 * 그래프 정보 입력
+	 */
 	private void init() throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
@@ -42,8 +49,8 @@ public class MainBFS {
 			int from = Integer.parseInt(edgeData[0]);
 			int to = Integer.parseInt(edgeData[1]);
 
-			graph.putIfAbsent(from, new ArrayList<>());
-			graph.get(from).add(to);
+			graph.putIfAbsent(from, new ArrayList<>()); // from 이 존재하지 않는 경우, 리스트 생성
+			graph.get(from).add(to); // 해당 from 에 to 추가
 		}
 	}
 
